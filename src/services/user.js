@@ -1,34 +1,68 @@
 import connection from "../database/connection";
-import hashPassword from "../utils/bcrypt";
-import emailValidation from "../utils/emailValidation";
-
+import addressService from "./address";
 export default {
-  async create(email, password) {
+  async create(user) {
     try {
-      const validation = emailValidation(email);
+      const { address, name, email, cpf, phone } = user;
+
+      const addresId = await addressService.create(address);
+
+      console.log("addres id ", addresId);
+      if (addresId) {
+        const userSaved = await connection
+          .table("users")
+          .returning(["id", "email"])
+          .insert({
+            name,
+            email,
+            cpf,
+            phone,
+            address_id: addresId,
+          });
+
+        return userSaved;
+      }
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async findUserById(id) {
+    try {
       const user = await connection
         .table("users")
-        .returning(["id", "email"])
-        .insert({
-          email,
-          password: hashPassword(password),
-        });
-
+        .innerJoin("address", "address.id", "=", "users.address_id")
+        .where("users.id", id)
+        .select([
+          "users.*",
+          "address.city",
+          "address.street",
+          "address.zip_code",
+          "address.number",
+        ])
+        .first();
       return user;
     } catch (error) {
       throw error;
     }
   },
 
-  async findUser(id) {
+  async updateUser(id, user) {
     try {
-      const user = await connection
-        .table("users")
-        .where("id", id)
-        .first()
-        .select();
+      const { name, email, cpf, phone, address } = user;
 
-      return user;
+      const userSaved = await connection.table("users").where("id", id).update({
+        name,
+        email,
+        cpf,
+        phone,
+      });
+
+      if (address) {
+        await addressService.updateAddress(address.id, address);
+      }
+
+      return userSaved;
     } catch (error) {
       throw error;
     }
