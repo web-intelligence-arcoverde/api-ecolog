@@ -70,4 +70,29 @@ export default {
       return res.status(404).send(error);
     }
   },
+
+  async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+
+      const userInDb = await userService.findUserById(id);
+
+      if (!userInDb) {
+        return res.status(404).send({
+          message: "User not found",
+        });
+      }
+
+      const user = await userService.deleteUser(id);
+
+      if (!user) {
+        return res.status(404).send({
+          message: "User not found",
+        });
+      }
+      return res.status(201).send();
+    } catch (error) {
+      return res.status(404).send(error);
+    }
+  },
 };

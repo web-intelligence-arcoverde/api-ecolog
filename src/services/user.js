@@ -69,4 +69,21 @@ export default {
       throw error;
     }
   },
+
+  async deleteUser(id) {
+    try {
+      const userDeleted = await connection
+        .table("users")
+        .where("id", id)
+        .first();
+
+      const { address_id } = userDeleted;
+
+      await connection("users").where("id", id).del();
+      await connection("address").where("id", address_id).del();
+      return userDeleted;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

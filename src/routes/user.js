@@ -1,9 +1,9 @@
 import { Router } from "express";
-import userService from "../controllers/user";
+import userController from "../controllers/user";
 
 const userRoutes = Router();
-userRoutes.post("/create-account", userService.create);
-userRoutes.get("/:id", userService.findById);
-userRoutes.put("/:id", userService.updateUser);
-
+userRoutes.post("/create-account", userController.create);
+userRoutes.get("/:id", userController.findById);
+userRoutes.put("/:id", userController.updateUser);
+userRoutes.delete("/:id", userController.deleteUser);
 export default userRoutes;
