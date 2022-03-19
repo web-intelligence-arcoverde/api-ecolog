@@ -40,7 +40,9 @@ export default {
           "address.zip_code",
           "address.number",
         ])
+
         .first();
+
       return user;
     } catch (error) {
       throw error;

@@ -52,13 +52,12 @@ export default {
         });
       }
 
-      const user = await userService.updateUser({
-        id,
+      const user = await userService.updateUser(id, {
         email,
         name,
         cpf,
         phone,
-        address,
+        address: { ...address, id: userInDb.address_id },
       });
 
       if (!user) {
@@ -66,7 +65,7 @@ export default {
           message: "User not found",
         });
       }
-      return res.status(201).send(user);
+      return res.status(201).send();
     } catch (error) {
       return res.status(404).send(error);
     }
